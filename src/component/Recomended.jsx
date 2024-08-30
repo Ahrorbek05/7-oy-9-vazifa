@@ -27,6 +27,14 @@ function Recomended() {
     fetchMovies();
   }, []);
 
+  const handleBookmark = (movie) => {
+    const savedMovies = JSON.parse(localStorage.getItem('savedMovies')) || [];
+    if (!savedMovies.find(m => m.id === movie.id)) {
+      savedMovies.push(movie);
+      localStorage.setItem('savedMovies', JSON.stringify(savedMovies));
+    }
+  };
+
   return (
     <div className='mb-32'>
       <h2 className='text-white font-small text-3xl mt-8'>Recommended for you</h2>
@@ -37,7 +45,10 @@ function Recomended() {
           movies.length > 0 ? (
             movies.map(movie => (
               <div key={movie.id} className="cards relative mt-10 w-[280px] h-[200px]">
-                <span className='absolute left-[230px] cursor-pointer top-4 w-10 h-10 bg-gray-700 opacity-[50%] rounded-[50%]'>
+                <span 
+                  className='absolute left-[230px] cursor-pointer top-4 w-10 h-10 bg-gray-700 opacity-[50%] rounded-[50%]'
+                  onClick={() => handleBookmark(movie)}
+                >
                   <i className="fa-regular fa-bookmark ml-[14px] mt-[12px] text-white"></i>
                 </span>
                 {movie.poster && movie.poster.url ? (

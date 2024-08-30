@@ -15,19 +15,15 @@ function Nav() {
       <nav className="flex flex-col items-center mt-6 gap-3">
         <a href="#" className="flex items-center justify-center px-6 py-3 hover:bg-gray-700 rounded">
           <img src={Shape} alt='shape icon' className="text-lg mr-3" />
-          
         </a>
         <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-700 rounded">
           <img src={Shape2} alt='shape2 icon' className="text-lg mr-3" />
-         
         </a>
         <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-700 rounded">
           <img src={Tv} alt='tv icon' className="text-lg mr-3" />
-          
         </a>
-        <a href="/save" className="flex items-center px-6 py-3 hover:bg-gray-700 rounded">
+        <a href="/saved-movies" className="flex items-center px-6 py-3 hover:bg-gray-700 rounded">
           <img src={Book} alt='book icon' className="text-lg mr-3" />
-         
         </a>
       </nav>
 
