@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 function Recomended() {
   const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -18,6 +19,8 @@ function Recomended() {
         setMovies(data.docs);
       } catch (error) {
         console.error('Error fetching movies:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -26,21 +29,31 @@ function Recomended() {
 
   return (
     <div className='mb-32'>
-      <h2 className='text-white font-small text-3xl mt-8'>Recomended for you</h2>
+      <h2 className='text-white font-small text-3xl mt-8'>Recommended for you</h2>
       <div className="container mx-auto max-w-[1280px] grid grid-cols-4 gap-12">
-        {movies.length > 0 ? (
-          movies.map(movie => (
-            <div key={movie.id} className="cards relative mt-10 w-[280px] h-[200px]">
-              <span className='absolute left-[230px] cursor-pointer top-4 w-10 h-10 bg-gray-700 opacity-[50%] rounded-[50%]'>
-                <i className="fa-regular fa-bookmark ml-[14px] mt-[12px] text-white"></i>
-              </span>
-              <img src={movie.poster.url} alt={movie.title} className='rounded-xl w-full h-[174px]' />
-              <h3 className='text-white font-bold'>{movie.year} Movie PG</h3>
-              <h3 className='text-white font-bold'>{movie.title}</h3>
-            </div>
-          ))
-        ) : (
+        {loading ? (
           <p className='text-white text-xl'>Loading movies...</p>
+        ) : (
+          movies.length > 0 ? (
+            movies.map(movie => (
+              <div key={movie.id} className="cards relative mt-10 w-[280px] h-[200px]">
+                <span className='absolute left-[230px] cursor-pointer top-4 w-10 h-10 bg-gray-700 opacity-[50%] rounded-[50%]'>
+                  <i className="fa-regular fa-bookmark ml-[14px] mt-[12px] text-white"></i>
+                </span>
+                {movie.poster && movie.poster.url ? (
+                  <img src={movie.poster?.url} alt={movie.title || 'Movie Poster'} className='rounded-xl w-full h-[174px]' />
+                ) : (
+                  <div className='bg-gray-700 rounded-xl w-full h-[174px] flex items-center justify-center'>
+                    <p className='text-white'>No Image</p>
+                  </div>
+                )}
+                <h3 className='text-white font-bold'>{movie.year} Movie PG</h3>
+                <h3 className='text-white font-bold'>{movie.name || 'No Title Available'}</h3>
+              </div>
+            ))
+          ) : (
+            <p className='text-white text-xl'>No movies found</p>
+          )
         )}
       </div>
     </div>
