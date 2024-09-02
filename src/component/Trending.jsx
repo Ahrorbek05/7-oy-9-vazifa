@@ -1,59 +1,71 @@
-import React, { useState } from 'react';
-import images from '../assets/search.svg'
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../axios';
+import images from '../assets/search.svg';
 
 function Trending() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [movies, setMovies] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const items = [
-    { src: 'https://picsum.photos/700/300', alt: 'Movie 1', title: 'Beyond Earth', info: '2019 • Movie • PG' },
-    { src: 'https://picsum.photos/700/300', alt: 'Movie 2', title: 'Beyond Earth', info: '2019 • Movie • PG' },
-    { src: 'https://picsum.photos/700/300', alt: 'Movie 3', title: 'Beyond Earth', info: '2019 • Movie • PG' },
-    { src: 'https://picsum.photos/700/300', alt: 'Movie 4', title: 'Beyond Earth', info: '2019 • Movie • PG' },
-    { src: 'https://picsum.photos/700/300', alt: 'Movie 5', title: 'Beyond Earth', info: '2019 • Movie • PG' },
-  ];
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await axiosInstance.get('/movie?rating.imdb=8-10');
+        setMovies(response.data.docs);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  const filteredItems = items.filter(item =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    fetchMovies();
+  }, []);
+
+  const filteredItems = movies.filter(movie =>
+    movie.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  
   const itemsToShow = 4;
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? filteredItems.length - itemsToShow : prevIndex - itemsToShow));
+    setCurrentIndex(prevIndex => 
+      prevIndex === 0 ? Math.max(filteredItems.length - itemsToShow, 0) : prevIndex - itemsToShow
+    );
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + itemsToShow >= filteredItems.length ? 0 : prevIndex + itemsToShow));
+    setCurrentIndex(prevIndex => 
+      prevIndex + itemsToShow >= filteredItems.length ? 0 : prevIndex + itemsToShow
+    );
   };
 
   return (
     <div className='flex flex-col gap-6 pt-8 text-white ml-64'>
-      <span className='flex gap-2'>
-        <img className='-mt-4' src={images} alt="" />
+      <div className='flex gap-2'>
+        <img className='-mt-4' src={images} alt="Search icon" />
         <input
-        type='text'
-        placeholder='Search for movies or TV series'
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className='mb-4 p-2 rounded-lg border w-72 border-gray-600 bg-gray-800 text-white'
-      /></span>
+          type='text'
+          placeholder='Search for movies or TV series'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className='mb-4 p-2 rounded-lg border w-72 border-gray-600 bg-gray-800 text-white'
+        />
+      </div>
       <h2 className='text-white font-small text-3xl'>Trending</h2>
       <div className="relative">
         <div className="container flex gap-4 mx-auto max-w-[1280px] overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * (100 / itemsToShow)}%)` }}
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
             {filteredItems.slice(currentIndex, currentIndex + itemsToShow).map((item, index) => (
-              <div key={index} className="w-[380px] h-[200px] bg-gray-800 rounded-xl overflow-hidden mr-4">
-                <img src={item.src} className="w-full h-full object-cover opacity-70" alt={item.alt} />
+              <div key={index} className="w-[380px] h-[200px] bg-gray-800 rounded-xl overflow-hidden mr-4 relative">
+                <img src={item.poster?.url || 'https://via.placeholder.com/380x200'} className="w-full h-full object-cover opacity-70" alt={item.name || 'Movie Poster'} />
                 <div className="absolute top-2 right-2 bg-gray-700 p-2 rounded-full">
                   <i className="fa-regular fa-bookmark text-white"></i>
                 </div>
                 <div className="absolute bottom-4 left-4 text-white">
-                  <p className="text-sm">{item.info}</p>
-                  <h3 className="text-lg font-bold">{item.title}</h3>
+                  <p className="text-sm">{item.year} Movie PG</p>
+                  <h3 className="text-lg font-bold">{item.name}</h3>
                 </div>
               </div>
             ))}
